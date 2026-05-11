@@ -15,6 +15,20 @@ class ManyToMany implements MatrixMultiplier {
 
         CompClass.ijkCompute(localA, B, localC, localRows, n);
 
-        MPI.COMM_WORLD.Allgatherv(localC, 0, counts[rank], MPI.DOUBLE, C, 0, counts, displs, MPI.DOUBLE);
+        int[] sendCounts = new int[size];
+        int[] sendDispls = new int[size];
+        int[] recvCounts = new int[size];
+        int[] recvDispls = new int[size];
+
+        for (int i = 0; i < size; i++) {
+            sendCounts[i] = counts[rank];
+            sendDispls[i] = 0;
+
+            recvCounts[i] = counts[i];
+            recvDispls[i] = displs[i];
+        }
+
+        MPI.COMM_WORLD.Alltoallv(localC, 0, sendCounts, sendDispls, MPI.DOUBLE,
+                C, 0, recvCounts, recvDispls, MPI.DOUBLE);
     }
 }
