@@ -8,7 +8,7 @@ class CompClass {
     public static void ijkCompute(double[] localA, double[] B, double[] localC, int rows, int n) {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < n; j++) {
-                double sum = 0;
+                double sum = 0.0;
                 for (int k = 0; k < n; k++) {
                     sum += localA[i * n + k] * B[k * n + j];
                 }

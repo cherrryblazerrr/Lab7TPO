@@ -12,8 +12,9 @@ class PointToPoint implements MatrixMultiplier {
         double[] sharedB = new double[n * n];
 
         if (rank == 0) {
-            System.arraycopy(B, 0, sharedB, 0, n * n);
             System.arraycopy(A, 0, localA, 0, counts[0]);
+            System.arraycopy(B, 0, sharedB, 0, n * n);
+
             for (int i = 1; i < size; i++) {
                 MPI.COMM_WORLD.Send(A, displs[i], counts[i], MPI.DOUBLE, i, 10);
                 MPI.COMM_WORLD.Send(B, 0, n * n, MPI.DOUBLE, i, 20);
@@ -27,7 +28,9 @@ class PointToPoint implements MatrixMultiplier {
 
         if (rank == 0) {
             System.arraycopy(localC, 0, C, 0, counts[0]);
-            for (int i = 1; i < size; i++) MPI.COMM_WORLD.Recv(C, displs[i], counts[i], MPI.DOUBLE, i, 30);
+            for (int i = 1; i < size; i++) {
+                MPI.COMM_WORLD.Recv(C, displs[i], counts[i], MPI.DOUBLE, i, 30);
+            }
         } else {
             MPI.COMM_WORLD.Send(localC, 0, counts[rank], MPI.DOUBLE, 0, 30);
         }
